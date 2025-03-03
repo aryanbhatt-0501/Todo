@@ -1,12 +1,27 @@
 module.exports = {
+	safelist: [
+		'h-1/5',
+		'h-4/5',
+		'h-1/4',
+		'h-3/4',
+		'h-1'
+	  ],
     darkMode: ['class'],
     content: [
     './src/pages/**/*.{js,ts,jsx,tsx}',  // Ensure pages are included
     './src/components/**/*.{js,ts,jsx,tsx}', // Ensure components are included
     './src/app/**/*.{js,ts,jsx,tsx}',  // Ensure any other files inside the app directory are included
+    './src/lib/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
   	extend: {
+		height: {
+			'1': '100%',
+			'1/5': '20%',
+			'4/5': '80%',
+			'1/4': '25%',
+			'3/4': '75%'
+		  },
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',

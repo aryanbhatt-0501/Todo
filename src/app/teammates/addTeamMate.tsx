@@ -44,7 +44,7 @@ export default function AddTeamMate() {
             name="username"
             render={({ field }) => (
               <FormItem className="w-[50%]">
-                <FormLabel>Name</FormLabel>
+                {/* <FormLabel>Name</FormLabel> */}
                 <FormControl>
                   <Input placeholder="Enter name" {...field} />
                 </FormControl>
@@ -59,7 +59,7 @@ export default function AddTeamMate() {
             name="email"
             render={({ field }) => (
               <FormItem className="w-[50%]">
-                <FormLabel>Email</FormLabel>
+                {/* <FormLabel>Email</FormLabel> */}
                 <FormControl>
                   <Input placeholder="Enter email" {...field} />
                 </FormControl>
@@ -73,7 +73,7 @@ export default function AddTeamMate() {
             name="designation"
             render={({ field }) => (
               <FormItem className="w-[50%]">
-                <FormLabel>Designation</FormLabel>
+                {/* <FormLabel>Designation</FormLabel> */}
                 <FormControl>
                   <Input placeholder="Designation" {...field} />
                 </FormControl>

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, {useState} from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -22,6 +22,7 @@ const formSchema = z.object({
 });
 
 export default function AddTeamMate() {
+  const [loading, setLoading] = useState<Boolean>(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -31,9 +32,36 @@ export default function AddTeamMate() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/teammates", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: values.username,
+          email: values.email,
+          designation: values.designation,
+        }),
+      });
+  
+      if (!res.ok) {
+        throw new Error("Failed to add teammate");
+      }
+  
+      // Optional: Clear form or show success
+      form.reset();
+      alert("Teammate added successfully!");
+  
+    } catch (error) {
+      console.error("Error adding teammate:", error);
+      alert("Something went wrong!");
+    } finally {
+      setLoading(false);
+    };
+  };  
 
   return (
     <div className="mt-6">

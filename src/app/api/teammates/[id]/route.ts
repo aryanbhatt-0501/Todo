@@ -2,15 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
 
 // GET single teammate (optional, if needed)
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const id = (await params).id;
   const teammate = await db.query("SELECT * FROM teammates WHERE id = $1", [id]);
   return NextResponse.json(teammate.rows[0]);
 }
 
 // UPDATE teammate
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const id = (await params).id;
   const { email, designation } = await req.json();
   
   await db.query(
@@ -22,8 +22,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 }
 
 // DELETE teammate
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const id = (await params).id;
   await db.query("DELETE FROM teammates WHERE id = $1", [id]);
   return NextResponse.json({ message: "Teammate deleted" });
 }

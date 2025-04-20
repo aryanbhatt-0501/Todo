@@ -1,5 +1,4 @@
 import NavLinks from "@/lib/nav-links";
-import Image from "next/image";
 
 export default function Navbar() {
   return (

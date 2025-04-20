@@ -4,7 +4,7 @@
 // The POST route inserts a new teammate into the 'teammates' table with the provided name, email, and designation.
 // It returns the newly created teammate record as JSON.
 // Import necessary modules
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 
 export async function GET() {

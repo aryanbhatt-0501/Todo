@@ -37,7 +37,7 @@ export default function Tasks() {
     assigneeid: "",
   });
   const [teammates, setTeammates] = useState<Teammate[]>([]);
-  const [updatedTask, setUpdatedTask] = useState<Task | null>(null);
+  // const [updatedTask, setUpdatedTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

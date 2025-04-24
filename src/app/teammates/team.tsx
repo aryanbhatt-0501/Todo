@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-type Teammate = {
+export type Teammate = {
   id: number;
   name: string;
   email: string;
@@ -118,7 +118,6 @@ export default function Team() {
 
   return (
     !loading && (
-      <Dialog>
         <Table>
           <TableCaption>Team Manchester United</TableCaption>
           <TableHeader className="border-b w-full">
@@ -180,7 +179,6 @@ export default function Team() {
             ))}
           </TableBody>
         </Table>
-      </Dialog>
     )
   );
 }

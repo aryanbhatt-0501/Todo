@@ -17,18 +17,20 @@ export default function DialogComponent({
     description,
     children,
     closeButtons,
+    open,
     onOpenChange,
 }: {
-    trigger: React.ReactNode;
+    trigger?: React.ReactNode;
     title: string;
     description: string;
     children: React.ReactNode;
+    open?: boolean;
     closeButtons: React.ReactNode;
     onOpenChange: (open: boolean) => void;
 }) {
     return (
-        <Dialog onOpenChange={onOpenChange}>
-            <DialogTrigger asChild>{trigger}</DialogTrigger>
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>

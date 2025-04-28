@@ -219,6 +219,44 @@ export default function Tasks() {
     return sorted;
   }, [tasks, filterText, sortKey, sortDirection]);
 
+  const handleSubmitEdit = async (editTask: Task | null, id: number) => {
+      if (!editTask) return;
+      const response = await fetch(`/api/tasks/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: editTask.title,
+          priority: editTask.priority,
+          content: editTask.content,
+          status: editTask.status,
+          assigneeid: teammates.find((t) => t.name === editTask.name)?.id,
+        }),
+      });
+      if (!response.ok) {
+        console.error("Error updating task:", response.statusText);
+        return;
+      }
+      const updatedTask = await response.json();
+      setTasks(prev => prev.map((task) =>
+          task.id === updatedTask.id
+            ? {
+                ...task,
+                title: updatedTask.title,
+                priority: updatedTask.priority,
+                content: updatedTask.content,
+                status: updatedTask.status,
+                name: teammates.find((t) => t.id === updatedTask.assigneeid)
+                  ?.name || "",
+              }
+            : task
+        )
+      );
+      setSelectedTask(null);
+      setIsTaskDialogOpen(false);
+    };
+
   return (
     !loading && (
       <div className="flex flex-col bg-gray-100 items-center justify-center gap-4 h-full w-full p-4">
@@ -344,7 +382,7 @@ export default function Tasks() {
           </div>
         </div>
         <div className="w-[80%] min-h-[600px] overflow-auto">
-          {isTaskDialogOpen && selectedTask && <ViewTask task={selectedTask} isTaskDialogOpen={isTaskDialogOpen} setIsTaskDialogOpen={setIsTaskDialogOpen} setSelectedTask={setSelectedTask} />}
+          {isTaskDialogOpen && selectedTask && <ViewTask task={selectedTask} isTaskDialogOpen={isTaskDialogOpen} setIsTaskDialogOpen={setIsTaskDialogOpen} setSelectedTask={setSelectedTask} teammates={teammates} handleSubmit={handleSubmitEdit} />}
           <Table>
             <TableCaption>Task list</TableCaption>
             <TableHeader>

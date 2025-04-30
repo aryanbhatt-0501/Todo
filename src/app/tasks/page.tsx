@@ -25,18 +25,17 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import DialogWrapper from "@/lib/helper/Dialog";
 import DropdownWrapper from "@/lib/helper/Dropdown";
-import { Teammate } from "@/app/teammates/team";
 import { cn } from "@/lib/utils";
-import ViewTask from './viewTask';
+import ViewTask from "./viewTask";
+import { Teammate } from "@/app/teammates/team";
 
 export type Task = {
   id: number;
   content: string;
-  email: string;
   title: string;
-  name: string;
   priority: string;
   status: string;
+  teammates: Teammate;
 };
 
 export default function Tasks() {
@@ -162,7 +161,7 @@ export default function Tasks() {
   const statusClass = (status: string) => {
     return cn(
       "px-2 py-1 rounded-md font-bold text-white",
-      status === "In progress" && "bg-yellow-500",
+      status === "In Progress" && "bg-yellow-500",
       status === "Completed" && "bg-green-500",
       status === "Todo" && "bg-red-500"
     );
@@ -184,7 +183,7 @@ export default function Tasks() {
     const filtered = tasks.filter(
       (task) =>
         task.title.toLowerCase().includes(filterText.toLowerCase()) ||
-        task.name.toLowerCase().includes(filterText.toLowerCase())
+        task.teammates.name.toLowerCase().includes(filterText.toLowerCase())
     );
 
     const sorted = [...filtered];
@@ -207,8 +206,8 @@ export default function Tasks() {
       });
     } else {
       sorted.sort((a, b) => {
-        const aVal = a[sortKey]?.toString().toLowerCase() ?? "";
-        const bVal = b[sortKey]?.toString().toLowerCase() ?? "";
+        const aVal = sortKey === "name" ? a.teammates.name.toLowerCase() : a[sortKey]?.toString().toLowerCase() ?? "";
+        const bVal = sortKey === "name" ? b.teammates.name.toLowerCase() : b[sortKey]?.toString().toLowerCase() ?? "";
 
         if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
         if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
@@ -220,42 +219,44 @@ export default function Tasks() {
   }, [tasks, filterText, sortKey, sortDirection]);
 
   const handleSubmitEdit = async (editTask: Task | null, id: number) => {
-      if (!editTask) return;
-      const response = await fetch(`/api/tasks/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: editTask.title,
-          priority: editTask.priority,
-          content: editTask.content,
-          status: editTask.status,
-          assigneeid: teammates.find((t) => t.name === editTask.name)?.id,
-        }),
-      });
-      if (!response.ok) {
-        console.error("Error updating task:", response.statusText);
-        return;
-      }
-      const updatedTask = await response.json();
-      setTasks(prev => prev.map((task) =>
-          task.id === updatedTask.id
-            ? {
-                ...task,
-                title: updatedTask.title,
-                priority: updatedTask.priority,
-                content: updatedTask.content,
-                status: updatedTask.status,
-                name: teammates.find((t) => t.id === updatedTask.assigneeid)
-                  ?.name || "",
-              }
-            : task
-        )
-      );
-      setSelectedTask(null);
-      setIsTaskDialogOpen(false);
-    };
+    if (!editTask) return;
+    const response = await fetch(`/api/tasks/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: editTask.title,
+        priority: editTask.priority,
+        content: editTask.content,
+        status: editTask.status,
+        assigneeid: teammates.find((t) => t.name === editTask.teammates.name)?.id,
+      }),
+    });
+    if (!response.ok) {
+      console.error("Error updating task:", response.statusText);
+      return;
+    }
+    const updatedTask = await response.json();
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === updatedTask.id
+          ? {
+              ...task,
+              title: updatedTask.title,
+              priority: updatedTask.priority,
+              content: updatedTask.content,
+              status: updatedTask.status,
+              name:
+                teammates.find((t) => t.id === updatedTask.assigneeid)?.name ||
+                "",
+            }
+          : task
+      )
+    );
+    setSelectedTask(null);
+    setIsTaskDialogOpen(false);
+  };
 
   return (
     !loading && (
@@ -354,7 +355,9 @@ export default function Tasks() {
             <h2 className="font-bold">Sort by:</h2>
             <Select
               value={sortKey}
-              onValueChange={(val: "title" | "priority" | "status" | "name") => setSortKey(val)}
+              onValueChange={(val: "title" | "priority" | "status" | "name") =>
+                setSortKey(val)
+              }
             >
               <SelectTrigger className="w-[160px] bg-gray-100">
                 <SelectValue placeholder="Sort by" />
@@ -382,7 +385,16 @@ export default function Tasks() {
           </div>
         </div>
         <div className="w-[80%] min-h-[600px] overflow-auto">
-          {isTaskDialogOpen && selectedTask && <ViewTask task={selectedTask} isTaskDialogOpen={isTaskDialogOpen} setIsTaskDialogOpen={setIsTaskDialogOpen} setSelectedTask={setSelectedTask} teammates={teammates} handleSubmit={handleSubmitEdit} />}
+          {isTaskDialogOpen && selectedTask && (
+            <ViewTask
+              task={selectedTask}
+              isTaskDialogOpen={isTaskDialogOpen}
+              setIsTaskDialogOpen={setIsTaskDialogOpen}
+              setSelectedTask={setSelectedTask}
+              teammate={teammates}
+              handleSubmit={handleSubmitEdit}
+            />
+          )}
           <Table>
             <TableCaption>Task list</TableCaption>
             <TableHeader>
@@ -409,7 +421,7 @@ export default function Tasks() {
                   >
                     {task.title}
                   </TableCell>
-                  <TableCell>{task.name}</TableCell>
+                  <TableCell>{task.teammates.name}</TableCell>
                   <TableCell>
                     <span className={priorityClass(task.priority)}>
                       {task.priority}

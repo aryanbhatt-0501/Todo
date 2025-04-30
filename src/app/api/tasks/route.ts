@@ -7,7 +7,7 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from("tasks")
-    .select("id, title, priority, content, status, assigneeid(id)");
+    .select("id, title, priority, content, status, teammates(id, name, email, designation)");
 
   if (error) {
     console.error("GET /api/tasks error:", error);

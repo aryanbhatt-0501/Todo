@@ -14,7 +14,7 @@ type TaskDialogContentProps = {
   isTaskDialogOpen: boolean;
   setIsTaskDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedTask: React.Dispatch<React.SetStateAction<Task | null>>;
-  teammates: Teammate[];
+  teammate: Teammate[];
   handleSubmit: (task: Task | null, id: number) => void;
 };
 
@@ -23,7 +23,7 @@ const TaskDialogContent: React.FC<TaskDialogContentProps> = ({
   isTaskDialogOpen,
   setIsTaskDialogOpen,
   setSelectedTask,
-  teammates,
+  teammate,
   handleSubmit,
 }) => {
   const [readOnly, setReadOnly] = useState(true);
@@ -41,7 +41,7 @@ const TaskDialogContent: React.FC<TaskDialogContentProps> = ({
   const statusClass = (status: string) => {
     return cn(
       "px-2 py-1 rounded-md font-bold text-white",
-      status === "In progress" && "bg-yellow-500",
+      status === "In Progress" && "bg-yellow-500",
       status === "Completed" && "bg-green-500",
       status === "Todo" && "bg-red-500"
     );
@@ -120,23 +120,23 @@ const TaskDialogContent: React.FC<TaskDialogContentProps> = ({
         <div>
           <Label className="font-medium">Assignee:</Label>{" "}
           {readOnly ? (
-            <h3 className="inline font-bold">{task.name}</h3>
+            <h3 className="inline font-bold">{task.teammates.name}</h3>
           ) : (
             <DropdownComponent
-              items={teammates.map((teammate) => ({
+              items={teammate.map((teammate) => ({
                 // value: teammate.id.toString(),
                 value: teammate.name,
                 label: teammate.name,
               }))}
-              placeholder={task.name}
+              placeholder={task.teammates.name}
               onChange={(value) => {
                 setEditTask(
                   editTask
                     ? {
                         ...editTask,
-                        name: value,
-                        email:
-                          teammates.find((t) => t.name === value)?.email ?? "",
+                        teammates: teammate.find(
+                          (teammate) => teammate.name === value
+                        ) as Teammate,
                       }
                     : null
                 );
@@ -175,7 +175,7 @@ const TaskDialogContent: React.FC<TaskDialogContentProps> = ({
           ) : (
             <DropdownComponent
               items={[
-                { value: "In progress", label: "In progress" },
+                { value: "In Progress", label: "In Progress" },
                 { value: "Completed", label: "Completed" },
                 { value: "Todo", label: "Todo" },
               ]}

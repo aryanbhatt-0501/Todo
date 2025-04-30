@@ -1,18 +1,37 @@
-import { NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { createClient } from "@/utils/supabase/server";
 
 export async function GET() {
-    const result = await pool.query('SELECT tasks.id, tasks.title, tasks.priority, tasks.content, tasks.status, teammates.name, teammates.email FROM tasks INNER JOIN teammates ON tasks.assigneeid = teammates.id');
-    return NextResponse.json(result.rows);
+  const supabase = createClient(cookies());
+
+  const { data, error } = await supabase
+    .from("tasks")
+    .select("id, title, priority, content, status, assigneeid(id)");
+
+  if (error) {
+    console.error("GET /api/tasks error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  };
+
+  return NextResponse.json(data);
 };
 
 export async function POST(req: Request) {
-    const body = await req.json();
-    const { title, priority, content, status } = body;
-    const assigneeid = Number(body.assigneeid);
-    const result = await pool.query(
-        'INSERT INTO tasks (title, priority, content, status, assigneeid) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-        [title, priority, content, status, assigneeid]
-    );
-    return NextResponse.json(result.rows[0]);
+  const supabase = createClient(cookies());
+  const body = await req.json();
+  const { title, priority, content, status, assigneeid } = body;
+
+  const { data, error } = await supabase
+    .from("tasks")
+    .insert([{ title, priority, content, status, assigneeid }])
+    .select()
+    .single();
+
+  if (error) {
+    console.error("POST /api/tasks error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json(data);
 };

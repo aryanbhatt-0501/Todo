@@ -1,19 +1,37 @@
-import { NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { createClient } from "@/utils/supabase/server";
 
 export async function GET() {
-  const result = await pool.query('SELECT * FROM teammates');
-  return NextResponse.json(result.rows);
+  const supabase = createClient(cookies());
+
+  const { data, error } = await supabase
+    .from("teammates")
+    .select("*");
+
+  if (error) {
+    console.error("GET /api/teammates error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json(data);
 }
 
 export async function POST(req: Request) {
+  const supabase = createClient(cookies());
   const body = await req.json();
   const { name, email, designation } = body;
 
-  const result = await pool.query(
-    'INSERT INTO teammates (name, email, designation) VALUES ($1, $2, $3) RETURNING *',
-    [name, email, designation]
-  );
+  const { data, error } = await supabase
+    .from("teammates")
+    .insert([{ name, email, designation }])
+    .select()
+    .single(); // for returning a single inserted row
 
-  return NextResponse.json(result.rows[0]);
-};
+  if (error) {
+    console.error("POST /api/teammates error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json(data);
+}

@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 
 export async function GET() {
-  const supabase = createClient(cookies());
+  const supabase = createClient(await cookies());
 
   const { data, error } = await supabase
     .from("tasks")
@@ -18,7 +18,7 @@ export async function GET() {
 };
 
 export async function POST(req: Request) {
-  const supabase = createClient(cookies());
+  const supabase = createClient(await cookies());
   const body = await req.json();
   const { title, priority, content, status, assigneeid } = body;
 

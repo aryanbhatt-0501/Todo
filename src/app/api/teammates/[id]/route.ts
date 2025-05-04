@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 
 // GET single teammate
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const supabase = createClient(cookies());
+  const supabase = createClient(await cookies());
   const id = (await params).id;
 
   const { data, error } = await supabase
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
 // UPDATE teammate
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const supabase = createClient(cookies());
+  const supabase = createClient(await cookies());
   const id = (await params).id;
   const { email, designation } = await req.json();
 
@@ -42,7 +42,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
 // DELETE teammate
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const supabase = createClient(cookies());
+  const supabase = createClient(await cookies());
   const id = (await params).id;
 
   const { error } = await supabase

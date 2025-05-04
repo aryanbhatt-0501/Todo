@@ -1,11 +1,10 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
-import { ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from 'react'
 
 export default async function Page() {
   const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
+  const supabase = createClient(await cookieStore)
 
   const { data: todos } = await supabase.from('todos').select()
 

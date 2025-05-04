@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const supabase = createClient(cookies());
+  const supabase = createClient(await cookies());
   const id = (await params).id;
   const body = await req.json();
   const { title, priority, content, status, assigneeid } = body;

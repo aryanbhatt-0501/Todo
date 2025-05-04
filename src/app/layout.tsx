@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   description: "More than a simple todo list",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

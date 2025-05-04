@@ -53,8 +53,6 @@ export default function Team() {
     fetchTeammates();
   }, []);
 
-  console.log("teammates", teammates);
-
   const handleDelete = async (id: number) => {
     try {
       const response = await fetch(`/api/teammates/${id}`, {

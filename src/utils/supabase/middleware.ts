@@ -1,37 +1,18 @@
-import { createServerClient } from "@supabase/ssr";
+import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
 import { type NextRequest, NextResponse } from "next/server";
 
-export const createClient = (request: NextRequest) => {
-  // Initial unmodified response
-  let supabaseResponse = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  });
+export async function middleware(req: NextRequest) {
+  const res = NextResponse.next();
+  
+  // Create Supabase client using the request and response
+  const supabase = createMiddlewareClient({ req, res });
 
-  // We don’t need to assign this to a variable unless we're using it
-  createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => {
-            request.cookies.set(name, value);
-            supabaseResponse.cookies.set(name, value);
-          });
+  // Ensure the session is loaded and cookies are set
+  await supabase.auth.getSession();
 
-          // Update response with cookie changes
-          supabaseResponse = NextResponse.next({
-            request,
-          });
-        },
-      },
-    }
-  );
+  return res;
+};
 
-  return supabaseResponse;
+export const config = {
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };

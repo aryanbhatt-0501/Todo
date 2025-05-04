@@ -2,16 +2,16 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
-import { FaHome } from 'react-icons/fa';
+import { FaHome, FaTeamspeak, FaTasks } from 'react-icons/fa';
 
 const links = [
   { name: 'Home', href: '/dashboard', icon: FaHome },
   {
     name: 'Team',
     href: '/teammates',
-    icon: FaHome,
+    icon: FaTeamspeak,
   },
-  { name: 'Tasks', href: '/tasks', icon: FaHome },
+  { name: 'Tasks', href: '/tasks', icon: FaTasks },
 ];
 
 export default function NavLinks() {

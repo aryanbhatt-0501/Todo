@@ -419,7 +419,7 @@ export default function Tasks() {
                       setIsTaskDialogOpen(true);
                     }}
                   >
-                    {task.title}
+                    <u>{task.title}</u>
                   </TableCell>
                   <TableCell>{task.teammates.name}</TableCell>
                   <TableCell>

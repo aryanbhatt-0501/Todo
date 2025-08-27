@@ -5,33 +5,46 @@ import { createClient } from "@/utils/supabase/server";
 export async function GET() {
   const supabase = createClient(await cookies());
 
-  const { data, error } = await supabase
-    .from("teammates")
-    .select("*");
+  // Get current user id from Supabase session
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (error) {
-    console.error("GET /api/teammates error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (!session?.user) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
+  const userId = session.user.id;
+
+  // Fetch all team memberships for the current user
+  const { data, error } = await supabase
+    .from("memberships")
+    .select("team_id, role, user_id")
+    .eq("user_id", userId);
+
+  if (error) {
+    console.error("GET /api/memberships error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
   return NextResponse.json(data);
 }
 
 export async function POST(req: Request) {
   const supabase = createClient(await cookies());
   const body = await req.json();
-  const { name, email, designation } = body;
+  const { team_id, user_id, role } = body;
+
+  // TODO: Check if user has permission to add members to this team
 
   const { data, error } = await supabase
-    .from("teammates")
-    .insert([{ name, email, designation }])
+    .from("memberships")
+    .insert([{ team_id, user_id, role }])
     .select()
-    .single(); // for returning a single inserted row
+    .single();
 
   if (error) {
-    console.error("POST /api/teammates error:", error);
+    console.error("POST /api/memberships error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-
   return NextResponse.json(data);
 }

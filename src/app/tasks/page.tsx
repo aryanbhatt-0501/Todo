@@ -9,8 +9,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -23,15 +21,14 @@ import { FaSortAmountUp } from "react-icons/fa";
 import { FaSortAmountDown } from "react-icons/fa";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import DialogWrapper from "@/lib/helper/Dialog";
-import DropdownWrapper from "@/lib/helper/Dropdown";
 import { cn } from "@/lib/utils";
 import ViewTask from "./viewTask";
 import { Teammate } from "@/app/teammates/team";
+import CreateTaskDialog from "./createTaskDialog";
 
 export type Task = {
   id: number;
-  content: string;
+  description: string;
   title: string;
   priority: string;
   status: string;
@@ -42,7 +39,7 @@ export default function Tasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [createTaskForm, setCreateTaskForm] = useState({
     title: "",
-    content: "",
+    description: "",
     priority: "",
     status: "",
     assigneeid: "",
@@ -137,7 +134,7 @@ export default function Tasks() {
       ]);
       setCreateTaskForm({
         title: "",
-        content: "",
+        description: "",
         priority: "",
         status: "",
         assigneeid: "",
@@ -206,8 +203,14 @@ export default function Tasks() {
       });
     } else {
       sorted.sort((a, b) => {
-        const aVal = sortKey === "name" ? a.teammates.name.toLowerCase() : a[sortKey]?.toString().toLowerCase() ?? "";
-        const bVal = sortKey === "name" ? b.teammates.name.toLowerCase() : b[sortKey]?.toString().toLowerCase() ?? "";
+        const aVal =
+          sortKey === "name"
+            ? a.teammates.name.toLowerCase()
+            : a[sortKey]?.toString().toLowerCase() ?? "";
+        const bVal =
+          sortKey === "name"
+            ? b.teammates.name.toLowerCase()
+            : b[sortKey]?.toString().toLowerCase() ?? "";
 
         if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
         if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
@@ -228,9 +231,10 @@ export default function Tasks() {
       body: JSON.stringify({
         title: editTask.title,
         priority: editTask.priority,
-        content: editTask.content,
+        description: editTask.description,
         status: editTask.status,
-        assigneeid: teammates.find((t) => t.name === editTask.teammates.name)?.id,
+        assigneeid: teammates.find((t) => t.name === editTask.teammates.name)
+          ?.id,
       }),
     });
     if (!response.ok) {
@@ -245,7 +249,7 @@ export default function Tasks() {
               ...task,
               title: updatedTask.title,
               priority: updatedTask.priority,
-              content: updatedTask.content,
+              description: updatedTask.description,
               status: updatedTask.status,
               name:
                 teammates.find((t) => t.id === updatedTask.assigneeid)?.name ||
@@ -263,86 +267,15 @@ export default function Tasks() {
       <div className="flex flex-col bg-gray-100 items-center justify-center gap-4 h-full w-full p-4">
         <div className="flex items-center justify-between w-[80%] p-2">
           <h1>Tasks</h1>
-          <DialogWrapper
-            title="Create a new task"
-            description="Briefly describe the task and assign it to a teammate."
-            trigger={
-              <Button className="bg-blue-500 text-white hover:bg-blue-700">
-                Add Task
-              </Button>
-            }
-            closeButtons={
-              <Button variant="default" onClick={handleSubmit}>
-                Create
-              </Button>
-            }
-            onOpenChange={() => {}}
-          >
-            <div className="space-y-4">
-              {inputFields.map((field, index) => (
-                <span key={index} className="flex flex-col space-y-2 mb-4">
-                  <Label className="font-medium">{field}</Label>
-                  {field === "Assignee" && (
-                    <DropdownWrapper
-                      items={teammates.map((t) => ({
-                        label: t.name,
-                        value: String(t.id),
-                      }))}
-                      onChange={(value) =>
-                        setCreateTaskForm({
-                          ...createTaskForm,
-                          assigneeid: value,
-                        })
-                      }
-                      placeholder="Assign to teammate"
-                    />
-                  )}
-                  {field === "Priority" && (
-                    <DropdownWrapper
-                      items={priorityOptions}
-                      onChange={(value) =>
-                        setCreateTaskForm({
-                          ...createTaskForm,
-                          priority: value,
-                        })
-                      }
-                      placeholder="Select priority"
-                    />
-                  )}
-                  {field === "Status" && (
-                    <DropdownWrapper
-                      items={statusOptions}
-                      onChange={(value) =>
-                        setCreateTaskForm({ ...createTaskForm, status: value })
-                      }
-                      placeholder="Select status"
-                    />
-                  )}
-                  {field !== "Assignee" &&
-                    field !== "Priority" &&
-                    field !== "Status" && (
-                      <Textarea
-                        className="border px-2 py-1 w-full rounded"
-                        onChange={(e) =>
-                          setCreateTaskForm({
-                            ...createTaskForm,
-                            [field.toLowerCase().replace(" ", "") ===
-                            "tasktitle"
-                              ? "title"
-                              : field.toLowerCase().replace(" ", "") ===
-                                "taskdescription"
-                              ? "content"
-                              : field.toLowerCase().replace(" ", "")]:
-                              e.target.value,
-                          })
-                        }
-                        placeholder={`Enter ${field.toLowerCase()}`}
-                      />
-                    )}
-                </span>
-              ))}
-            </div>
-          </DialogWrapper>
+          <CreateTaskDialog
+            inputFields={inputFields}
+            teammates={teammates}
+            priorityOptions={priorityOptions}
+            statusOptions={statusOptions}
+            createTaskForm={createTaskForm}
+            setCreateTaskForm={setCreateTaskForm}
+            handleSubmit={handleSubmit}
+          />
         </div>
         <div className="flex w-[80%] justify-between items-center">
           <Input

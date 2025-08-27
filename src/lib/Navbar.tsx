@@ -1,10 +1,11 @@
-'use client';
+"use client";
 import NavLinks from "@/lib/nav-links";
 import type { User } from "@supabase/supabase-js";
 import { logout } from "@/app/actions/logout";
 import { useEffect, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
+import Link from "next/link";
 
 export default function Navbar() {
   const supabase = createClient();
@@ -12,20 +13,22 @@ export default function Navbar() {
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-     // Initial fetch
-     supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    // Initial fetch
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
 
-     // Listen for auth changes
-     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-       setUser(session?.user ?? null);
-     });
- 
-     // Cleanup listener on unmount
-     return () => {
-       listener.subscription.unsubscribe();
-     };
+    // Listen for auth changes
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    // Cleanup listener on unmount
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, [supabase.auth]);
-  
+
   return (
     <div className="flex flex-col h-full w-[12%] justify-between items-stretch p-4 bg-black text-white fontweight-bold">
       <div className="flex items-center justify-center h-2/5">
@@ -51,7 +54,9 @@ export default function Navbar() {
         </div>
       ) : (
         <div className="flex h-3/5 flex-col items-center gap-8">
-          <p className="text-sm">Please log in.</p>
+          <Link href={"/login"} className="w-full">
+            <Button className="w-full bg-white text-black">Login</Button>
+          </Link>
         </div>
       )}
     </div>

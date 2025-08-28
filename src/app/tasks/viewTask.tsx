@@ -65,7 +65,11 @@ const TaskDialogContent: React.FC<TaskDialogContentProps> = ({
             Close
           </Button>
           {!readOnly && (
-            <Button variant={"default"} type="button" onClick={() => handleSubmit(editTask, task.id)}>
+            <Button
+              variant={"default"}
+              type="button"
+              onClick={() => handleSubmit(editTask, task.id)}
+            >
               Update
             </Button>
           )}
@@ -108,11 +112,11 @@ const TaskDialogContent: React.FC<TaskDialogContentProps> = ({
           <Label className="font-medium">Task Description</Label>
           <Textarea
             className="border px-2 py-1 w-full rounded opacity-50"
-            value={readOnly ? task.content : editTask?.content}
+            value={readOnly ? task.description : editTask?.description}
             readOnly={readOnly}
             onChange={(e) => {
               setEditTask(
-                editTask ? { ...editTask, content: e.target.value } : null
+                editTask ? { ...editTask, description: e.target.value } : null
               );
             }}
           />

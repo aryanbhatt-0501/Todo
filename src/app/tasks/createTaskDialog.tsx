@@ -106,7 +106,7 @@ const createTaskDialog: React.FC<CreateTaskDialogProps> = ({
                         ? "title"
                         : field.toLowerCase().replace(" ", "") ===
                           "taskdescription"
-                        ? "content"
+                        ? "description"
                         : field.toLowerCase().replace(" ", "")]: e.target.value,
                     })
                   }

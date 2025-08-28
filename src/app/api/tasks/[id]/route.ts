@@ -11,7 +11,7 @@ export async function PATCH(
   const id = (await params).id;
   const body = await req.json();
   // Only support one assignee, not multiple
-  const { title, priority, content, status, assigned_to } = body;
+  const { title, priority, description, status, assigned_to } = body;
 
   // Update the task details, including assignee (assigned_to)
   const { data: taskData, error: taskError } = await supabase
@@ -19,7 +19,7 @@ export async function PATCH(
     .update({
       title,
       priority,
-      content,
+      description,
       status,
       assigned_to: assigned_to || null,
       updated_at: new Date().toISOString(),

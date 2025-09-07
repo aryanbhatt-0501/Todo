@@ -116,67 +116,67 @@ export default function Team() {
 
   return (
     !loading && (
-        <Table>
-          <TableCaption>Team Manchester United</TableCaption>
-          <TableHeader className="border-b w-full">
-            <TableRow>
-              <TableHead className="w-[150px]">Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Action</TableHead>
-              <TableHead>Designation</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {teammates.map((teammate) => (
-              <TableRow key={teammate.id}>
-                <TableCell>{teammate.name}</TableCell>
-                <TableCell>{teammate.email}</TableCell>
-                <TableCell className="flex gap-2">
-                  <MdDelete
-                    onClick={() => handleDelete(teammate.id)}
-                    className="w-5 h-5 cursor-pointer"
-                  />
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <MdEdit
-                        onClick={() => setUpdatedTeammate(teammate)}
-                        className="w-5 h-5 cursor-pointer"
+      <Table>
+        <TableCaption>Team Manchester United</TableCaption>
+        <TableHeader className="border-b w-full">
+          <TableRow>
+            <TableHead className="w-[150px]">Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Action</TableHead>
+            <TableHead>Designation</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {teammates.map((teammate) => (
+            <TableRow key={teammate.id}>
+              <TableCell>{teammate.name}</TableCell>
+              <TableCell>{teammate.email}</TableCell>
+              <TableCell className="flex gap-2">
+                <MdDelete
+                  onClick={() => handleDelete(teammate.id)}
+                  className="w-5 h-5 cursor-pointer"
+                />
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <MdEdit
+                      onClick={() => setUpdatedTeammate(teammate)}
+                      className="w-5 h-5 cursor-pointer"
+                    />
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Edit Teammate</DialogTitle>
+                      <DialogDescription>
+                        Update email and/or designation
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <input
+                        defaultValue={teammate.email}
+                        className="border px-2 py-1 w-full rounded"
+                        onChange={(e) => onEmailChange(e.target.value)}
                       />
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Edit Teammate</DialogTitle>
-                        <DialogDescription>
-                          Update email and/or designation
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <input
-                          defaultValue={teammate.email}
-                          className="border px-2 py-1 w-full rounded"
-                          onChange={(e) => onEmailChange(e.target.value)}
-                        />
-                        <input
-                          defaultValue={teammate.designation}
-                          className="border px-2 py-1 w-full rounded"
-                          onChange={(e) => onDesignationChange(e.target.value)}
-                        />
-                      </div>
-                      <DialogFooter>
-                        <DialogClose asChild>
-                          <Button onClick={() => handleEdit(teammate.id)}>
-                            Save Changes
-                          </Button>
-                        </DialogClose>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                </TableCell>
-                <TableCell>{teammate.designation}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                      <input
+                        defaultValue={teammate.designation}
+                        className="border px-2 py-1 w-full rounded"
+                        onChange={(e) => onDesignationChange(e.target.value)}
+                      />
+                    </div>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button onClick={() => handleEdit(teammate.id)}>
+                          Save Changes
+                        </Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </TableCell>
+              <TableCell>{teammate.designation}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     )
   );
 }
